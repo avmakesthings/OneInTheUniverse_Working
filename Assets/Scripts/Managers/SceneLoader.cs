@@ -1,10 +1,10 @@
-﻿using System.Collections;
+﻿// This class handles loading and unloading application scenes
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-
-// This class handles loading and unloading application scenes
 public class SceneLoader : MonoBehaviour
 {
 
