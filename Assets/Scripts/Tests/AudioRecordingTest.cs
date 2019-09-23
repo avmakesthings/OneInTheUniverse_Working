@@ -27,18 +27,18 @@ public class AudioRecordingTest : MonoBehaviour
         {
             isRecording = true;
             Debug.Log("Recording audio");
-            //RecordAndTranscribeAudioOld.StartRecording(micName);
             RecordAndTranscribeAudio.StartSpeechToText(string.Format("{0}_{1}", filepath, counter), (string text) => {
                 Debug.LogFormat("In the Delegate: {0}", text);
             }) ;
+            AnalyzeKeyword.StartKeywordAnalysis();
         }
 
         if (Input.GetKeyDown("o") && isRecording)
         {
             Debug.Log("stopping recording");
-            //RecordAndTranscribeAudioOld.StopRecording(micName);
-            //RecordAndTranscribeAudioOld.WriteAudioToFile(string.Format("{0}_{1}",filepath,counter));
+
             RecordAndTranscribeAudio.StopSpeechToText();
+            AnalyzeKeyword.StopKeywordAnalysis();
             counter++;
             isRecording = false;
         }

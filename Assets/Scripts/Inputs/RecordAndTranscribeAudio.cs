@@ -2,6 +2,8 @@
 // 1 -- The transcription functionality only works with Windows 10
 // 2 -- Microphone access needs to be grated through Windows privacy settings
 
+using System;
+using System.Text;
 using UnityEngine;
 using UnityEngine.Windows.Speech;
 
@@ -11,12 +13,9 @@ public static class RecordAndTranscribeAudio
 {
     static AudioClip recording;
 
+    private static string concatString;
     private static DictationRecognizer _d;
     private static string microphoneName = "Microphone (Realtek(R) Audio)";
-
-    // TODO: Kind of weird setting these static properties.
-    // Would be better to make this class not-static, 
-    // or somehow curry these values in the ensuing function calls
     private static string curRecordingFileName;
     private static OnTextReceived curOnTextReceived;
 
@@ -24,9 +23,8 @@ public static class RecordAndTranscribeAudio
     {
         curRecordingFileName = recordingFileName;
         curOnTextReceived = onTextReceived;
-        // TODO: Can we pass a longer duration? Will it cut things off at the right time? 
-        recording = Microphone.Start(microphoneName, true, 10, 44100);
-
+        concatString = "";
+        recording = Microphone.Start(microphoneName, true, 30, 44100);
         _d = new DictationRecognizer();
         _d.Start();
         _d.DictationResult += HandleText;
@@ -45,7 +43,39 @@ public static class RecordAndTranscribeAudio
 
     public static void HandleText(string text, ConfidenceLevel confidence)
     {
-        Debug.LogFormat("Dictation result: {0}", text);
-        curOnTextReceived(text);
+        Debug.LogFormat("HandleText: {0}", text);
+        concatString += " " + text;
+        curOnTextReceived(concatString);
     }
 }
+
+
+public static class AnalyzeKeyword {
+
+    static string[] keywords = new string [4] {"helpful", "alone", "together", "testing" };
+    private static KeywordRecognizer _k = new KeywordRecognizer(keywords);
+
+    public static void StartKeywordAnalysis()
+    {
+        _k.OnPhraseRecognized += OnPhraseRecognized;
+        _k.Start();
+    }
+
+    public static void StopKeywordAnalysis()
+    {
+        _k.OnPhraseRecognized -= OnPhraseRecognized;
+        _k.Stop();
+        _k.Dispose();
+    }
+
+    private static void OnPhraseRecognized(PhraseRecognizedEventArgs args)
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.AppendFormat("{0} ({1}){2}", args.text, args.confidence, Environment.NewLine);
+        builder.AppendFormat("\tTimestamp: {0}{1}", args.phraseStartTime, Environment.NewLine);
+        builder.AppendFormat("\tDuration: {0} seconds{1}", args.phraseDuration.TotalSeconds, Environment.NewLine);
+        Debug.Log(builder.ToString());
+    }
+
+}
+
