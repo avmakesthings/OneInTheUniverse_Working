@@ -5,6 +5,10 @@ using UnityEngine;
 
 public class MakeNeuron : MonoBehaviour
 {
+    /*
+     * Neuron making code based on the "TREES Toolbox" algorithm https://www.treestoolbox.org/
+       https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000877
+       */
     static Material lineMaterial;
 
     TreeNode<NodeItem> neuron;
@@ -18,9 +22,9 @@ public class MakeNeuron : MonoBehaviour
         neuron = CreateNeuron(0.7f, 1000, 500, 1f, 0.33333333f);
         /* May want to tweak densprofindex; 1/3 gives a volume-uniform set of
          * carrier points. e.g. 1 would give more points near the center */
-    }
+}
 
-    TreeNode<NodeItem> CreateNeuron(float bf, int num_cp, int num_links,
+TreeNode<NodeItem> CreateNeuron(float bf, int num_cp, int num_links,
         float max_rad, float densprofindex)
     {
 
